@@ -204,11 +204,13 @@ app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 
 # Health Check
 @app.get("/health")
+@app.get("/health/")
 def health_check():
     return {"status": "ok"}
 
 # Identify Breed Endpoint
 @app.post("/api/identify", response_model=schemas.IdentifyResponse)
+@app.post("/api/identify/", response_model=schemas.IdentifyResponse)
 async def identify_breed(
     image: UploadFile = File(...),
     db: Session = Depends(get_db)
