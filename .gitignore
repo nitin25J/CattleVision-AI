@@ -1,28 +1,32 @@
-# Dependencies
+# Dependencies & Cache
 node_modules/
 **/node_modules/
-
-# Build & Cache
+.vite/
+**/.vite/
 dist/
 **/dist/
 __pycache__/
 /**/__pycache__/
 *.pyc
 
-# Local Environment Variables
+# Local Database
+*.db
+backend/cattle_vision.db
+
+# Environment Variables
 .env
 frontend/.env
 backend/.env
 
-# IDE & OS Files
+# IDE & OS
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# Uploads directory contents (keep directory structure)
+# Uploads directory contents
 backend/uploads/*
 !backend/uploads/.gitkeep
 
-# Ensure model is tracked
+# Ensure trained PyTorch model is tracked
 !backend/model/final_cow_breed_model.pth
