@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build & Cache
+dist/
+**/dist/
+__pycache__/
+/**/__pycache__/
+*.pyc
+
+# Local Environment Variables
+.env
+frontend/.env
+backend/.env
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Uploads directory contents (keep directory structure)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Ensure model is tracked
+!backend/model/final_cow_breed_model.pth
