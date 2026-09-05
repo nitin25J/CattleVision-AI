@@ -52,3 +52,19 @@ Top Prediction + Top-3 Alternatives
 Database
   ↓
 Frontend Result
+
+API Endpoints
+
+| Method   | Endpoint               | Description                    |
+| -------- | ---------------------- | ------------------------------ |
+| `GET`    | `/health`              | Check backend status           |
+| `POST`   | `/api/identify`        | Upload image and predict breed |
+| `GET`    | `/api/history`         | Get identification history     |
+| `GET`    | `/api/history/{id}`    | Get a specific identification  |
+| `DELETE` | `/api/history/{id}`    | Delete an identification       |
+| `GET`    | `/api/dashboard/stats` | Get dashboard statistics       |
+| `GET`    | `/api/breeds`          | Get all supported breeds       |
+| `GET`    | `/api/breeds/{name}`   | Get breed details              |
+| `GET`    | `/api/users/me`        | Get current user profile       |
+| `PUT`    | `/api/users/me`        | Update user profile            |
+
