@@ -122,7 +122,7 @@ The dataset was researched, cleaned, organized, segmented, and prepared before m
 * Website interface
 * Interactive user experience
 
-### Prince Agarwal
+### Prince Agrawal
 
 * Frontend development
 * UI/UX contribution
