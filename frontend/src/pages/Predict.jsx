@@ -65,8 +65,8 @@ export default function Predict({ usePredictionHook, onNavigate }) {
         apiError = err?.response?.data?.detail || err.message || "Prediction request failed.";
       });
 
-    // Realistic visual processing delay of ~2.2 seconds
-    const total = 2200;
+    // Realistic visual processing delay (Sped up from 2.2s to 1.2s for snappier premium feel)
+    const total = 1200;
     const stepDuration = total / (analyzingSteps.length - 1);
     let elapsed = 0;
 
