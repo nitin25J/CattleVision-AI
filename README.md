@@ -60,20 +60,31 @@ Frontend Result
 
 ---
 
-##  Key Features
+## Key Features
 
-*  Indian cattle breed identification
-*  Image-based breed classification
-*  Deep-learning-based prediction
-*  Support for 18 selected Indian cattle breeds
-*  **90% test accuracy**
-*  Top-3 breed predictions
-*  Confidence scores
-*  Fast web-based inference
-*  REST API-based backend
-*  Prediction history using SQLite
-*  Separate frontend and backend deployment
-*  Accessible through a web browser
+- Indian cattle breed identification
+- Image-based breed classification
+- Deep-learning-based prediction
+- Support for 18 selected Indian cattle breeds
+- **90% test accuracy**
+- Top-3 breed predictions
+- Confidence scores
+- Fast web-based inference
+- REST API-based backend
+- Dynamic veterinary clinic and hospital locator
+- Browser-based location detection
+- OpenStreetMap / Overpass-based veterinary search
+- Haversine-based geographic distance validation
+- Automatic veterinary search-radius expansion
+- Rural-area veterinary fallback support
+- Geographic validation for fallback veterinary locations
+- Deprecated Foursquare API integration removed
+- Optimized prediction loading experience
+- Reduced artificial processing delay from **2.2 seconds to 1.2 seconds**
+- Prediction history using SQLite
+- Separate frontend and backend deployment
+- Accessible through a web browser
+
 
 ---
 
