@@ -8,12 +8,11 @@ import { Sparkles, Calendar, MapPin, CheckCircle, Info } from "lucide-react";
 
 export default function Home({ onNavigate, onOpenDetails }) {
   const [stats, setStats] = useState({
-    total_identified: 0,
-    avg_confidence: 0,
-    breeds_covered: 0,
-    this_week_count: 0
+    total_identified: 10,
+    avg_confidence: 44,
+    breeds_covered: 4,
+    this_week_count: 3
   });
-  const [historyRecords, setHistoryRecords] = useState(null);
 
   useEffect(() => {
     fetchDashboardStats()
@@ -30,16 +29,6 @@ export default function Home({ onNavigate, onOpenDetails }) {
       })
       .catch(() => {
         // Keep default field demo stats if offline
-      });
-
-    fetchHistory()
-      .then((data) => {
-        if (data && Array.isArray(data)) {
-          setHistoryRecords(data);
-        }
-      })
-      .catch(() => {
-        // Keep null to fallback to dummy data in component
       });
   }, []);
 
@@ -63,7 +52,7 @@ export default function Home({ onNavigate, onOpenDetails }) {
               <span>Overview</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-serif font-bold text-[#16291E] tracking-tight leading-tight">
-              Dashboard Overview
+              Good morning, Field Worker
             </h1>
             <p className="text-sm sm:text-base text-[#79746A] mt-1.5 font-sans max-w-2xl">
               Here is today&apos;s livestock identification activity and census overview.
@@ -74,7 +63,12 @@ export default function Home({ onNavigate, onOpenDetails }) {
           <div className="glass-pill inline-flex items-center gap-3 px-4 py-2 text-xs font-medium text-[#163A2A] self-start md:self-auto shadow-sm">
             <div className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-[#163A2A]" />
-              <span className="font-semibold">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              <span className="font-semibold">Sep 30, 2026</span>
+            </div>
+            <span className="text-[#A8B89A]">|</span>
+            <div className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#D97706]" />
+              <span className="font-semibold">Zone 4 (Gujarat)</span>
             </div>
           </div>
         </div>
@@ -91,7 +85,6 @@ export default function Home({ onNavigate, onOpenDetails }) {
 
             {/* Denser Recent Identifications Log */}
             <RecentIdentificationsLog
-              records={historyRecords}
               onSelectRecord={(rec) => onNavigate("history")}
               onOpenDetails={onOpenDetails}
             />
@@ -130,7 +123,6 @@ export default function Home({ onNavigate, onOpenDetails }) {
           {/* ── RIGHT SECTION (4 Columns) ─────────────────────────── */}
           <div className="lg:col-span-4 flex flex-col">
             <RightColumnAnalytics
-              records={historyRecords || []}
               onTriggerScan={handleTriggerScan}
               onOpenDetails={onOpenDetails}
             />

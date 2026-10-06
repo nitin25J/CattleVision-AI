@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { uploadAndIdentify, getImageUrl } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { UploadCloud, CheckCircle, Camera, Image as ImageIcon, AlertCircle } from "lucide-react";
 
 const analyzingSteps = [
   "Detecting animal & isolating subject…",
@@ -151,26 +152,23 @@ export default function Predict({ usePredictionHook, onNavigate }) {
 
   const handleDrop = (e) => {
     e.preventDefault();
-    e.currentTarget.classList.remove("dragover");
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFile(e.dataTransfer.files[0]);
     }
   };
 
-
   return (
-    <section className="screen active" id="screen-identify">
-      <p className="eyebrow">Identify</p>
-      <h1 className="page-title">Identify a breed</h1>
-      <p className="page-subtitle">Upload a clear image of cattle or buffalo.</p>
+    <div className="w-full max-w-4xl mx-auto anim-hero-entrance">
+      <div className="text-center mb-10">
+        <p className="text-[var(--forest-mid)] font-semibold tracking-widest uppercase text-xs mb-3">Identify</p>
+        <h1 className="text-4xl md:text-5xl font-display font-bold text-[var(--forest-deep)] mb-4">Identify a breed</h1>
+        <p className="text-[var(--charcoal)] opacity-80 text-lg max-w-xl mx-auto">Upload a clear image of cattle or buffalo to analyze its visual characteristics.</p>
+      </div>
 
       {error && (
-        <div className="error-inline show" id="uploadError">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 8v5M12 16h.01" />
-          </svg>
-          {errorMessage || "Please choose a valid animal photo first."}
+        <div className="glass-strong text-red-200 p-4 rounded-xl flex items-center gap-3 mb-8 anim-stagger-1">
+          <AlertCircle size={20} />
+          <span className="font-medium">{errorMessage || "Please choose a valid animal photo first."}</span>
         </div>
       )}
 
@@ -185,68 +183,52 @@ export default function Predict({ usePredictionHook, onNavigate }) {
           onCancel={handleCancelAnalysis}
         />
       ) : (
-        <>
+        <div className="space-y-6 anim-stagger-2">
           {/* Upload Zone */}
           <div
-            className="upload-zone"
-            id="uploadZone"
-            onDragEnter={(e) => {
-              e.preventDefault();
-              e.currentTarget.classList.add("dragover");
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.currentTarget.classList.add("dragover");
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              e.currentTarget.classList.remove("dragover");
-            }}
+            className="glass glass-hover p-12 rounded-3xl flex flex-col items-center justify-center text-center cursor-pointer border-2 border-dashed border-[var(--sage)]/50 hover:border-[var(--forest-mid)]/60 transition-all"
+            onDragEnter={(e) => e.preventDefault()}
+            onDragOver={(e) => e.preventDefault()}
+            onDragLeave={(e) => e.preventDefault()}
             onDrop={handleDrop}
             onClick={(e) => {
               if (e.target.closest("button")) return;
               fileInputRef.current?.click();
             }}
           >
-            <div className="upload-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
-                <path d="M7 9l5-5 5 5" />
-                <path d="M12 4v12" />
-              </svg>
+            <div className="w-20 h-20 rounded-full bg-white/40 flex items-center justify-center mb-6 shadow-inner text-[var(--forest-mid)]">
+              <UploadCloud size={36} strokeWidth={1.5} />
             </div>
-            <div className="upload-title">Drop image here</div>
-            <div className="upload-sub">or choose from your device</div>
-            <div className="upload-actions">
+            <h3 className="text-2xl font-bold text-[var(--forest-deep)] mb-2">Drop image here</h3>
+            <p className="text-[var(--charcoal)] opacity-70 mb-8">or choose from your device</p>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <button
-                className="btn btn-primary btn-sm"
+                className="glass-strong text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 hover:bg-[var(--forest)] transition-colors shadow-lg"
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="6" width="18" height="14" rx="2.5" />
-                  <circle cx="12" cy="13" r="3.5" />
-                </svg>
+                <Camera size={18} />
                 Take photo
               </button>
               <button
-                className="btn btn-outline btn-sm"
+                className="glass text-[var(--forest-deep)] px-6 py-3 rounded-xl font-medium flex items-center gap-2 hover:bg-white/40 transition-colors"
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
               >
+                <ImageIcon size={18} />
                 Choose from gallery
               </button>
             </div>
             <input
               type="file"
               ref={fileInputRef}
-              id="fileInput"
               style={{ display: "none" }}
               accept="image/*"
               onChange={(e) => {
@@ -259,55 +241,46 @@ export default function Predict({ usePredictionHook, onNavigate }) {
 
           {/* Preview Card */}
           {imagePreview && (
-            <>
-              <div className="preview-card show" id="previewCard">
-                <div className="preview-img-wrap">
-                  <img id="previewImg" src={imagePreview} alt="Uploaded animal photo preview" />
-                </div>
-                <div className="preview-meta-row">
-                  <span className="meta-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                    Image ready
-                  </span>
-                  <span className="meta-chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                    Animal visible
-                  </span>
+            <div className="grid md:grid-cols-2 gap-6 anim-stagger-3">
+              <div className="glass p-4 rounded-3xl">
+                <div className="w-full h-64 md:h-full rounded-2xl overflow-hidden relative shadow-inner">
+                  <img src={imagePreview} alt="Uploaded preview" className="w-full h-full object-cover" />
+                  <div className="absolute bottom-4 left-4 right-4 flex gap-2">
+                    <span className="glass-pill px-3 py-1.5 text-xs font-semibold text-[var(--forest-deep)] flex items-center gap-1.5 shadow-sm">
+                      <CheckCircle size={14} className="text-[var(--forest-mid)]" /> Image ready
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Photo Quality Card */}
-              <div className="quality-card show" id="qualityCard">
-                <div className="quality-title">Photo quality</div>
-                <div className="quality-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
-                  Animal clearly visible
-                </div>
-                <div className="quality-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
-                  Good framing
-                </div>
-                <div className="quality-note">Better photos usually produce better predictions.</div>
+              <div className="glass p-8 rounded-3xl flex flex-col justify-center">
+                <h4 className="text-xl font-bold text-[var(--forest-deep)] mb-6">Photo quality checklist</h4>
+                <ul className="space-y-4 mb-6">
+                  <li className="flex items-center gap-3 text-[var(--charcoal)]">
+                    <CheckCircle size={20} className="text-[var(--forest-mid)]" />
+                    Animal clearly visible
+                  </li>
+                  <li className="flex items-center gap-3 text-[var(--charcoal)]">
+                    <CheckCircle size={20} className="text-[var(--forest-mid)]" />
+                    Good framing
+                  </li>
+                </ul>
+                <p className="text-sm text-[var(--charcoal)] opacity-70 mb-8 bg-white/20 p-4 rounded-xl">
+                  Better photos usually produce better predictions. Make sure the face and body are well-lit.
+                </p>
+                <button 
+                  className="glass-strong text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 w-full shadow-lg hover:scale-[1.02] transition-transform"
+                  onClick={() => startAnalysis(imagePreview)}
+                >
+                  <Camera size={20} />
+                  Analyze breed
+                </button>
               </div>
-
-              <button className="btn btn-primary btn-block" onClick={() => startAnalysis(imagePreview)}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />
-                </svg>
-                Analyze breed
-              </button>
-            </>
+            </div>
           )}
-        </>
+        </div>
       )}
-    </section>
+    </div>
   );
 }

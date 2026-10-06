@@ -7,7 +7,6 @@ import Predict from "./pages/Predict";
 import Result from "./pages/Result";
 import Records from "./pages/Records";
 import Dashboard from "./pages/Dashboard";
-import VeterinaryCare from "./pages/VeterinaryCare";
 import BreedDetailsModal from "./components/BreedDetailsModal";
 import { usePrediction } from "./hooks/usePrediction";
 
@@ -78,11 +77,6 @@ export default function App() {
         {activeScreen === "profile" && (
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <Dashboard />
-          </div>
-        )}
-        {activeScreen === "veterinary" && (
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 h-[calc(100vh-80px)]">
-            <VeterinaryCare />
           </div>
         )}
       </main>
