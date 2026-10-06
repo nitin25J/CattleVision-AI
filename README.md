@@ -77,6 +77,90 @@ Frontend Result
 
 ---
 
+## Veterinary Assistance & Location Intelligence
+
+CattleVision AI includes a dynamic veterinary locator designed to help users identify nearby veterinary hospitals and clinics based on their current geographic location.
+
+### Dynamic Veterinary Locator
+
+The veterinary discovery pipeline uses **OpenStreetMap and the Overpass API** to search for nearby veterinary facilities dynamically.
+
+The system uses an adaptive search strategy:
+
+```text
+User Location
+      ↓
+40 km Search Radius
+      ↓
+Veterinary Clinics Found?
+   ↙             ↘
+ YES              NO
+  ↓                ↓
+Show Results     Expand to 60 km
+                   ↓
+             Clinics Found?
+                ↙      ↘
+              YES       NO
+               ↓         ↓
+          Show Results  Expand to 100 km
+                            ↓
+                       Show Results
+```
+
+### Location-Aware Search
+
+The system uses geographic distance calculations to ensure that veterinary facilities are relevant to the user's actual location.
+
+* Browser-based user geolocation
+* Haversine distance calculation
+* Dynamic search-radius expansion
+* OpenStreetMap / Overpass API integration
+* Location-aware veterinary facility discovery
+* Support for rural and tier-3 locations
+
+### Rural Veterinary Fallback
+
+Because veterinary facilities in rural areas may not always be completely mapped in OpenStreetMap, CattleVision AI includes a verified local fallback database for selected underserved regions.
+
+The fallback currently includes:
+
+* **Sehore Government Veterinary Hospital — Sehore**
+* **State Veterinary Hospital / Rajya Pashu Chikitsalay — Bhopal**
+* **Pet Spectrum Veterinary Clinic and Surgery Center — Bhopal**
+
+The fallback system performs geographic validation before displaying these locations. It does not blindly display Sehore or Bhopal facilities to users located in unrelated regions.
+
+This provides an additional reliability layer when live OpenStreetMap data does not return sufficient veterinary facilities.
+
+### Deprecated API Removal
+
+The previous **Foursquare API integration was completely removed** from the veterinary locator pipeline, eliminating obsolete API dependencies and associated API-key errors.
+
+---
+
+##  Prediction Experience Optimization
+
+The frontend prediction experience has been optimized to provide faster feedback while maintaining the application's AI-analysis experience.
+
+### Processing Experience
+
+The artificial ML-processing animation on the prediction interface was reduced from:
+
+**2.2 seconds → 1.2 seconds**
+
+This reduces unnecessary waiting time while preserving the visual processing state presented to users during AI inference.
+
+### UX Improvements
+
+* Faster perceived prediction response
+* Reduced artificial processing delay
+* Cleaner prediction-loading experience
+* More responsive result presentation
+* Maintained visual AI-analysis feedback
+* Improved overall frontend performance perception
+
+---
+
 ##  AI & Machine Learning
 
 The project uses **transfer learning** with EfficientNet-B0.
