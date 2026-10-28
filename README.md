@@ -143,11 +143,6 @@ The fallback system performs geographic validation before displaying these locat
 
 This provides an additional reliability layer when live OpenStreetMap data does not return sufficient veterinary facilities.
 
-### Deprecated API Removal
-
-The previous **Foursquare API integration was completely removed** from the veterinary locator pipeline, eliminating obsolete API dependencies and associated API-key errors.
-
----
 
 ##  Prediction Experience Optimization
 
