@@ -4,20 +4,37 @@ import { Check, Clock, AlertCircle, ChevronRight, ShieldCheck, Tag } from "lucid
 export default function RecentIdentificationsLog({ records: propRecords, onSelectRecord, onOpenDetails }) {
   // If the backend provided real history records, format them for the UI
   const displayRecords = propRecords && propRecords.length > 0 
-    ? propRecords.slice(0, 5).map((rec, idx) => ({
-        id: rec.id || `scan-${idx}`,
-        breed: rec.breed_predicted || rec.breed,
-        species: rec.species || "Cattle",
-        date: rec.created_at ? new Date(rec.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (rec.date || "Today"),
-        confidence: rec.confidence_score ? Math.round(rec.confidence_score * 100 * 10) / 10 : (rec.confidence || 90),
-        subText: rec.notes || "Auto-identified from image",
-        status: "verified",
-        statusLabel: "Verified",
-        earTag: rec.animal_id || "Un-tagged",
-        colorHex: "#1F3B2C",
-        bgHex: "#E7EEE0",
-        thumbnailText: (rec.breed_predicted || rec.breed || "C").substring(0, 2).toUpperCase()
-      }))
+    ? propRecords.slice(0, 5).map((rec, idx) => {
+        const conf = rec.confidence_score ? Math.round(rec.confidence_score * 100 * 10) / 10 : (rec.confidence || 0);
+        let status = "verified";
+        let statusLabel = "Verified";
+        let subText = rec.notes || "Auto-identified from image";
+
+        if (conf < 45) {
+          status = "unverified";
+          statusLabel = "Low Conf / Non-Cattle";
+          subText = "Uncertain subject - low match";
+        } else if (conf < 70) {
+          status = "review";
+          statusLabel = "Needs Review";
+          subText = "Moderate confidence scan";
+        }
+
+        return {
+          id: rec.id || `scan-${idx}`,
+          breed: rec.breed_predicted || rec.breed,
+          species: rec.species || "Cattle",
+          date: rec.created_at ? new Date(rec.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (rec.date || "Today"),
+          confidence: conf,
+          subText,
+          status,
+          statusLabel,
+          earTag: rec.animal_id || "Un-tagged",
+          colorHex: "#1F3B2C",
+          bgHex: "#E7EEE0",
+          thumbnailText: (rec.breed_predicted || rec.breed || "C").substring(0, 2).toUpperCase()
+        };
+      })
     : [];
 
   const getConfidenceBadge = (confidence) => {
@@ -51,11 +68,19 @@ export default function RecentIdentificationsLog({ records: propRecords, onSelec
         icon: <ShieldCheck className="w-3 h-3" />
       };
     }
+    if (status === "review") {
+      return {
+        bg: "bg-[#FEF3C7]",
+        text: "text-[#92400E]",
+        border: "border-[#FDE68A]",
+        icon: <AlertCircle className="w-3 h-3 text-[#D97706]" />
+      };
+    }
     return {
-      bg: "bg-[#F3F4F6]",
-      text: "text-[#4B5563]",
-      border: "border-[#E5E7EB]",
-      icon: <Clock className="w-3 h-3 text-[#9CA3AF]" />
+      bg: "bg-[#FEE2E2]",
+      text: "text-[#B91C1C]",
+      border: "border-[#FECACA]",
+      icon: <AlertCircle className="w-3 h-3 text-[#DC2626]" />
     };
   };
 

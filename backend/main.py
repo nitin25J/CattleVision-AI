@@ -211,14 +211,14 @@ def health_check():
 # Identify Breed Endpoint
 @app.post("/api/identify", response_model=schemas.IdentifyResponse)
 @app.post("/api/identify/", response_model=schemas.IdentifyResponse)
-async def identify_breed(
+def identify_breed(
     image: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
     if not image.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File uploaded must be a valid image (JPG, PNG, WEBP).")
 
-    content = await image.read()
+    content = image.file.read()
     if len(content) == 0:
         raise HTTPException(status_code=400, detail="Uploaded image file is empty.")
 

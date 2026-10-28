@@ -45,8 +45,14 @@ def load_model():
         
     model_arch.to(device)
     model_arch.eval()
+    try:
+        dummy = torch.zeros((1, 3, 224, 224), dtype=torch.float32, device=device)
+        with torch.no_grad():
+            _ = model_arch(dummy)
+    except Exception as e:
+        print(f"[Predict] Warmup warning: {e}")
     model = model_arch
-    print(f"[Predict] Loaded PyTorch model on {device} with {num_classes} classes.")
+    print(f"[Predict] Loaded and warmed up PyTorch model on {device} with {num_classes} classes.")
 
 # Image preprocessing pipeline
 transform_pipeline = transforms.Compose([

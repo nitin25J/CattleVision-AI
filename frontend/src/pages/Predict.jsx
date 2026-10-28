@@ -33,6 +33,56 @@ export default function Predict({ usePredictionHook, onNavigate }) {
     };
   }, []);
 
+  // Client-side image optimization for fast network upload
+  const optimizeImageForUpload = (file) => {
+    return new Promise((resolve) => {
+      if (file.size < 400 * 1024) {
+        return resolve(file);
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1200;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const optFile = new File([blob], file.name || "cattle.jpg", {
+                  type: "image/jpeg",
+                  lastModified: Date.now()
+                });
+                resolve(optFile);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/jpeg",
+            0.88
+          );
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  };
+
   const startAnalysis = async (currentImg, fileToUpload) => {
     const imgToAnalyze = currentImg || imagePreview;
     const targetFile = fileToUpload || selectedFile;
@@ -55,49 +105,67 @@ export default function Predict({ usePredictionHook, onNavigate }) {
 
     let apiResult = null;
     let apiError = null;
+    let apiDone = false;
 
     // Start API request in parallel
-    const apiPromise = uploadAndIdentify(targetFile)
-      .then((res) => {
-        apiResult = res;
-      })
-      .catch((err) => {
-        apiError = err?.response?.data?.detail || err.message || "Prediction request failed.";
-      });
+    optimizeImageForUpload(targetFile).then((optFile) => {
+      uploadAndIdentify(optFile)
+        .then((res) => {
+          apiResult = res;
+          apiDone = true;
+        })
+        .catch((err) => {
+          apiError = err?.response?.data?.detail || err.message || "Prediction request failed.";
+          apiDone = true;
+        });
+    });
 
-    // Realistic visual processing delay (Sped up from 2.2s to 1.2s for snappier premium feel)
-    const total = 1200;
-    const stepDuration = total / (analyzingSteps.length - 1);
-    let elapsed = 0;
+    // Realistic visual processing delay (Sped up to 1.1s for snappier experience)
+    const minAnimTime = 1100;
+    const startTime = Date.now();
+    let hasCompleted = false;
 
-    intervalRef.current = setInterval(async () => {
-      elapsed += 40;
-      const pct = Math.min((elapsed / total) * 100, 95);
-      setProgress(pct);
+    intervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
 
-      const targetStep = Math.min(Math.floor(elapsed / stepDuration), analyzingSteps.length - 2);
-      setStepIndex((prev) => {
-        if (targetStep !== prev) {
-          setStepFade(true);
-          setTimeout(() => setStepFade(false), 120);
-          return targetStep;
+      if (!apiDone) {
+        // While API is in flight, smoothly move through steps up to 90%
+        const pct = Math.min((elapsed / minAnimTime) * 88, 90);
+        setProgress(pct);
+        const targetStep = Math.min(Math.floor((elapsed / minAnimTime) * (analyzingSteps.length - 1)), analyzingSteps.length - 2);
+        setStepIndex((prev) => {
+          if (targetStep !== prev) {
+            setStepFade(true);
+            setTimeout(() => setStepFade(false), 120);
+            return targetStep;
+          }
+          return prev;
+        });
+      } else {
+        // API response received
+        if (apiError || !apiResult) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          setIsAnalyzing(false);
+          setError(true);
+          setErrorMessage(apiError || "Animal breed identification failed. Please make sure the backend is running.");
+          return;
         }
-        return prev;
-      });
 
-      if (elapsed >= total) {
-        // Wait for API promise if not done yet
-        await apiPromise;
+        // Wait until at least minAnimTime has passed for aesthetic experience
+        if (elapsed < minAnimTime) {
+          const pct = Math.min((elapsed / minAnimTime) * 95, 95);
+          setProgress(pct);
+          const targetStep = Math.min(Math.floor((elapsed / minAnimTime) * (analyzingSteps.length - 1)), analyzingSteps.length - 2);
+          setStepIndex(targetStep);
+          return;
+        }
+
+        if (hasCompleted) return;
+        hasCompleted = true;
 
         clearInterval(intervalRef.current);
         intervalRef.current = null;
-
-        if (apiError || !apiResult) {
-          setIsAnalyzing(false);
-          setError(true);
-          setErrorMessage(apiError || "Animal breed identification failed. Please try again.");
-          return;
-        }
 
         setProgress(100);
         setStepIndex(analyzingSteps.length - 1);
@@ -106,15 +174,15 @@ export default function Predict({ usePredictionHook, onNavigate }) {
           setImagePreview(getImageUrl(apiResult.image_url));
         }
 
-        // Smooth cross-fade transition: fade out loading, then navigate to result
+        // Smooth cross-fade transition
         setIsExiting(true);
         exitTimeoutRef.current = setTimeout(() => {
           setIsAnalyzing(false);
           setIsExiting(false);
           onNavigate("result");
-        }, 340);
+        }, 300);
       }
-    }, 40);
+    }, 35);
   };
 
   const handleCancelAnalysis = () => {
