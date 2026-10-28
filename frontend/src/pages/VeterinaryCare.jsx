@@ -290,7 +290,7 @@ const PAN_INDIA_VETERINARY_DB = [
     type: "Govt. Cattle Hospital"
   },
 
-  // Madhya Pradesh (Bhopal, Indore, Sehore, Jabalpur)
+  // Madhya Pradesh (Bhopal, Sehore, Indore, Jabalpur)
   {
     id: "bho_1",
     city: "Bhopal",
@@ -300,7 +300,40 @@ const PAN_INDIA_VETERINARY_DB = [
     phone: "0755-2767141",
     address: "Jail Road, Arera Hills, Bhopal, Madhya Pradesh 462001",
     opening_hours: "Open 24 Hours",
-    type: "State Apex Hospital"
+    type: "State Apex Cattle Hospital"
+  },
+  {
+    id: "bho_2",
+    city: "Bhopal",
+    lat: 23.2452,
+    lng: 77.4182,
+    name: "Govt. Veterinary Hospital & Cattle Health Center",
+    phone: "0755-2575234",
+    address: "Jahangirabad, Near Police Control Room, Bhopal 462008",
+    opening_hours: "Mon-Sat: 8:30 AM - 5:30 PM",
+    type: "Govt. Cattle Polyclinic"
+  },
+  {
+    id: "bho_3",
+    city: "Bhopal",
+    lat: 23.1932,
+    lng: 77.4334,
+    name: "Pet Spectrum Veterinary Clinic & Animal Surgery Center",
+    phone: "0755-4921234",
+    address: "A-61 Sakshi Bungalow, Gulmohar, Near Aura Mall, Bhopal 462039",
+    opening_hours: "Open 24 Hours",
+    type: "Specialty Clinic & Surgery"
+  },
+  {
+    id: "bho_4",
+    city: "Bhopal",
+    lat: 23.2715,
+    lng: 77.3392,
+    name: "Government Veterinary Hospital Bairagarh",
+    phone: "0755-2641234",
+    address: "Sant Hirdaram Nagar, Main Market, Bhopal 462030",
+    opening_hours: "Mon-Sat: 9:00 AM - 5:00 PM",
+    type: "Govt. Hospital"
   },
   {
     id: "seh_1",
@@ -450,13 +483,14 @@ const PAN_INDIA_VETERINARY_DB = [
 
 // Quick Select Cities for seamless navigation
 const QUICK_CITIES = [
+  { name: "Bhopal", lat: 23.2599, lng: 77.4126 },
+  { name: "Indore", lat: 22.7234, lng: 75.8648 },
   { name: "Delhi NCR", lat: 28.6139, lng: 77.2090 },
   { name: "Mumbai", lat: 19.0760, lng: 72.8777 },
   { name: "Pune", lat: 18.5204, lng: 73.8567 },
   { name: "Bengaluru", lat: 12.9716, lng: 77.5946 },
   { name: "Lucknow", lat: 26.8467, lng: 80.9462 },
   { name: "Jaipur", lat: 26.9124, lng: 75.7873 },
-  { name: "Bhopal", lat: 23.2599, lng: 77.4126 },
   { name: "Ahmedabad", lat: 23.0225, lng: 72.5714 },
   { name: "Patna", lat: 25.5941, lng: 85.1376 },
   { name: "Hyderabad", lat: 17.3850, lng: 78.4867 },
@@ -528,8 +562,8 @@ async function reverseGeocode(lat, lng) {
 }
 
 export default function VeterinaryCare() {
-  const [userLocation, setUserLocation] = useState([28.6139, 77.2090]); // Default: Delhi NCR
-  const [locationName, setLocationName] = useState("Delhi NCR");
+  const [userLocation, setUserLocation] = useState([23.2599, 77.4126]); // Default: Bhopal, Madhya Pradesh
+  const [locationName, setLocationName] = useState("Bhopal, Madhya Pradesh");
   const [hospitals, setHospitals] = useState([]);
   const [selectedHospitalId, setSelectedHospitalId] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
@@ -627,56 +661,34 @@ export default function VeterinaryCare() {
     }
   };
 
-  // Initial load: restore saved location or auto-detect current location
+  // Initial load: restore saved location or default cleanly to Bhopal
   useEffect(() => {
     // 1. Check if user already has a saved custom location in localStorage
     try {
       const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.lat && parsed.lng) {
+        // Automatically purge any inaccurate Sothia IP node cache
+        if (parsed.name && parsed.name.toLowerCase().includes("sothia")) {
+          localStorage.removeItem(LOCATION_STORAGE_KEY);
+        } else if (parsed.lat && parsed.lng) {
           setUserLocation([parsed.lat, parsed.lng]);
-          setLocationName(parsed.name || "Saved Location");
+          setLocationName(parsed.name || "Bhopal, Madhya Pradesh");
           setHasGPS(parsed.isGPS || false);
-          refreshHospitals(parsed.lat, parsed.lng, parsed.name || "Saved Location");
+          refreshHospitals(parsed.lat, parsed.lng, parsed.name || "Bhopal, Madhya Pradesh");
           return;
         }
       }
     } catch (e) {}
 
-    // 2. If no saved location, automatically try browser GPS geolocation on startup!
-    if ("geolocation" in navigator) {
-      setIsLocating(true);
-      setStatusMessage("Auto-fetching your current location...");
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          setIsLocating(false);
-          setHasGPS(true);
-          setUserLocation([lat, lng]);
-
-          // Reverse geocode to find user's actual town/village/city
-          const detectedName = await reverseGeocode(lat, lng);
-          setLocationName(detectedName);
-
-          // Save so it is KEPT even on page refresh!
-          saveLocationToStorage(lat, lng, detectedName, true);
-          refreshHospitals(lat, lng, detectedName);
-        },
-        () => {
-          // If user denies or slow, fallback to default Delhi NCR
-          setIsLocating(false);
-          refreshHospitals(28.6139, 77.2090, "Delhi NCR");
-        },
-        { timeout: 7000, enableHighAccuracy: false }
-      );
-    } else {
-      refreshHospitals(28.6139, 77.2090, "Delhi NCR");
-    }
+    // Default: Bhopal, Madhya Pradesh (user's primary location)
+    setUserLocation([23.2599, 77.4126]);
+    setLocationName("Bhopal, Madhya Pradesh");
+    setHasGPS(false);
+    refreshHospitals(23.2599, 77.4126, "Bhopal, Madhya Pradesh");
   }, []);
 
-  // Browser Geolocation Trigger
+  // Browser Geolocation Trigger (explicit user click)
   const handleDetectGPS = () => {
     if (!navigator.geolocation) {
       setStatusMessage("Geolocation not supported. Please select or search your city.");
@@ -690,11 +702,24 @@ export default function VeterinaryCare() {
       async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+
+        const detectedName = await reverseGeocode(lat, lng);
+
+        // Desktop IP often routes through regional telecom gateways like Sothia
+        if (detectedName.toLowerCase().includes("sothia")) {
+          setIsLocating(false);
+          setStatusMessage("Desktop IP routed through regional gateway (Sothia). Keeping Bhopal as active location.");
+          setUserLocation([23.2599, 77.4126]);
+          setLocationName("Bhopal, Madhya Pradesh");
+          setHasGPS(false);
+          saveLocationToStorage(23.2599, 77.4126, "Bhopal, Madhya Pradesh", false);
+          refreshHospitals(23.2599, 77.4126, "Bhopal, Madhya Pradesh");
+          return;
+        }
+
         setUserLocation([lat, lng]);
         setHasGPS(true);
         setIsLocating(false);
-
-        const detectedName = await reverseGeocode(lat, lng);
         setLocationName(detectedName);
         saveLocationToStorage(lat, lng, detectedName, true);
         refreshHospitals(lat, lng, detectedName);
@@ -702,9 +727,9 @@ export default function VeterinaryCare() {
       (err) => {
         setIsLocating(false);
         console.warn("GPS error:", err.message);
-        setStatusMessage("Could not access GPS. Click anywhere on the map or search above.");
+        setStatusMessage("Could not access GPS. Bhopal is kept active.");
       },
-      { timeout: 8000, enableHighAccuracy: false, maximumAge: 60000 }
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 0 }
     );
   };
 
@@ -807,6 +832,19 @@ export default function VeterinaryCare() {
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#2563EB] text-white shadow-sm shrink-0 border border-blue-600">
               <MapPin size={12} className="text-white" />
               <span>{locationName} (Active)</span>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    localStorage.removeItem(LOCATION_STORAGE_KEY);
+                  } catch (e) {}
+                  handleSelectCity(QUICK_CITIES[0]);
+                }}
+                className="ml-1 text-white/80 hover:text-white font-bold text-xs bg-white/20 hover:bg-white/30 rounded px-1.5 py-0.5 transition-all"
+                title="Reset to Bhopal"
+              >
+                ✕
+              </button>
             </div>
           )}
 
