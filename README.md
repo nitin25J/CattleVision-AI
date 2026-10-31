@@ -2,7 +2,7 @@
 
 ## AI-Powered Indian Cattle Breed Identification System
 
-CattleVision AI is a **computer-vision-based web application** that identifies Indian cattle breeds from images using a deep-learning classification model.
+CattleVision AI is a **computer-vision-based web application** that identifies Indian cattle breeds from images using a deep-learning classification model
 
 The system uses a **fine-tuned EfficientNet-B0 model with PyTorch** to classify cattle images into **18 selected Indian cattle breeds**, achieving **90% test accuracy** on the evaluated dataset.
 
