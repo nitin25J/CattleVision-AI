@@ -235,11 +235,30 @@ def identify_breed(
     with open(filepath, "wb") as f:
         f.write(content)
 
+    # Prevent disk/RAM bloat on ephemeral cloud instances (e.g. Render) by pruning old uploads
+    try:
+        upload_files = [
+            os.path.join(UPLOADS_DIR, f) 
+            for f in os.listdir(UPLOADS_DIR) 
+            if os.path.isfile(os.path.join(UPLOADS_DIR, f))
+        ]
+        if len(upload_files) > 40:
+            upload_files.sort(key=os.path.getmtime)
+            for old_file in upload_files[:-30]:
+                try:
+                    os.remove(old_file)
+                except OSError:
+                    pass
+    except Exception:
+        pass
+
     # Run PyTorch inference
     try:
         pred_result = predict.predict_breed_from_bytes(content)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Image processing failed: {str(e)}")
+    finally:
+        del content
 
     image_url = f"/uploads/{saved_filename}"
 
