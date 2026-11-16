@@ -409,60 +409,7 @@ https://cattlevision-backend.onrender.com
 
 ---
 
-##  Contributors
 
-### Ankit Nag
-
-**Frontend Development & UI/UX**
-
-* Frontend development
-* UI/UX design
-* Website interface
-* Interactive user experience
-* Frontend implementation
-
-### Prince Agrawal
-
-**Frontend & Dataset Management**
-
-* Frontend development
-* UI/UX contribution
-* Website implementation
-* Data cleaning
-* Dataset management
-* Dataset preparation
-* Dataset organization and segmentation
-
-### Nitin Sharma
-
-**AI/ML, Backend, Frontend Optimization & System Integration**
-
-* Research and problem-domain analysis
-* Dataset research and collection
-* Dataset cleaning and preparation
-* Dataset organization and segmentation
-* AI dataset pipeline development
-* EfficientNet-B0 implementation
-* Model training
-* AI inference pipeline
-* Backend API development
-* Frontend-backend-AI integration
-* Veterinary clinic locator pipeline development
-* OpenStreetMap / Overpass API integration for live veterinary clinic discovery
-* Dynamic veterinary search-radius expansion from **40 km → 60 km → 100 km**
-* Haversine-based geographic distance calculation and location validation
-* Rural-area veterinary fallback database implementation
-* Verified veterinary hospital and clinic location integration for underserved areas
-* Geographic safety validation to prevent irrelevant out-of-region veterinary results
-* Removal of deprecated Foursquare API integration and related API dependencies
-* Frontend prediction experience optimization
-* Reduction of artificial prediction-processing delay from **2.2 seconds to 1.2 seconds**
-* Loading-state and perceived-performance optimization
-* Premium AI analysis experience and responsive result presentation
-* Deployment
-* Debugging and troubleshooting
-* End-to-end system integration
----
 
 ## 🔮 Future Scope
 
